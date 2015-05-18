@@ -1,6 +1,7 @@
 Help Scout Java Wrapper
 =======================
-Java Wrapper for the Help Scout API. More information on our developer site: [http://developer.helpscout.net](http://developer.helpscout.net).
+Forked Java Wrapper for the Help Scout API. More information on our developer
+site: [http://developer.helpscout.net](http://developer.helpscout.net).
 
 Version 1.3.13 Released
 ---------------------
@@ -8,44 +9,73 @@ Please see the [Changelog](https://github.com/helpscout/helpscout-api-java/blob/
 
 Requirements
 ---------------------
-* JDE 1.6
+* JRE 1.6
 * [google-gson](http://code.google.com/p/google-gson/)
 
 Example Usage: API
 ---------------------
-<pre><code>
-import net.helpscout.api;
+```java
+import net.helpscout.api.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class TestingAPI {
 
-  public static void main(String[] args) throws ApiException {
-        ApiClient client = ApiClient.getInstance();
-        client.setKey("your-api-key-here");
+    public static void main(String[] args) throws ApiException {
+		ApiClient client = ApiClient.getInstance();
+		client.setKey("your-api-key-here");
 
-  	List<String> fields = new ArrayList<String>();
-  	fields.add("name");
-	fields.add("email");
-	Page mailboxes = client.getMailboxes(fields);
-	if (mailboxes) {
-	      // do something
-	}
+		List<String> fields = new ArrayList<String>();
+		fields.add("name");
+		fields.add("email");
+		fields.add("id");
+		Page mailboxes = client.getMailboxes(fields);
+		if (mailboxes != null) {
+			  // do something
+			  Collection allMailboxes = mailboxes.getItems();
 
-	Mailbox mailbox = client.getMailbox(85);
-	if (mailbox) {
-		String mailboxName = mailbox.getName();
-		List<Folder> folders = mailbox.getFolders();
-	}
+			  for (Object mailboxObj : allMailboxes) {
+			      Mailbox mailbox = (Mailbox) mailboxObj;
+			      System.out.println("Name: " + mailbox.getName());
+			      System.out.println("ID: " + mailbox.getId());
+			  }
+		}
 
-	Customer c = client.getCustomer(customer-id-here);
-	if (c.hasSocialProfiles()) {
-		List<SocialProfileEntry> profiles = c.getSocialProfiles();
-		// do something
-	}
-  }
+		Long mailboxId = 123456L;
+		Mailbox mailbox = client.getMailbox(mailboxId);
+		if (mailbox != null) {
+			String mailboxName = mailbox.getName();
+			Page folders = client.getFolders(mailbox.getId());
+
+			if (folders != null) {
+			    Collection allFolders = folders.getItems();
+
+			    for (Object foldersObj : allFolders) {
+			        Folder folder = (Folder) foldersObj;
+			        System.out.println("Name: " + folder.getName());
+			    }
+			}
+		}
+
+		Page allCustomers = client.getCustomers(0);
+		Collection customers = allCustomers.getItems();
+
+		for (Object customersObj : customers) {
+			Customer customer = (Customer) customersObj;
+
+			System.out.println("Customer Name: " + customer.getFirstName() +
+			" " + customer.getLastName());
+
+			if (customer.hasSocialProfiles()) {
+				List<SocialProfileEntry> profiles = customer
+				.getSocialProfiles();
+				// do something
+			}
+		}
+  	}
 }
-</code></pre>
+```
 
 Field Selectors
 ---------------------
@@ -91,17 +121,17 @@ Each method also has a duplicate that allows you to pass in a list of Strings to
 
 Example Usage: Webhooks
 ------------------------
-<pre><code>
+```java
 Webhook webhook = new Webhook('secret-key-here', httpRequest);
 if (webhook.isValid()) {
-   String event = webhook.getEventType();
+	String event = webhook.getEventType();
 
-   if (webhook.isConversationEvent()) {
-	Conversation convo = webhook.getConversation();
-	// do something
-   } else if (webhook.isCustomerEvent()) {
-	Customer customer = webhook.getCustomer();
-	// do something
-   }
+	if (webhook.isConversationEvent()) {
+		Conversation convo = webhook.getConversation();
+		// do something
+	} else if (webhook.isCustomerEvent()) {
+		Customer customer = webhook.getCustomer();
+		// do something
+	}
 }
-</code></pre>
+```
