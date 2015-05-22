@@ -3,9 +3,7 @@ Help Scout Java Wrapper
 Forked Java Wrapper for the Help Scout API. More information on our developer
 site: [http://developer.helpscout.net](http://developer.helpscout.net).
 
-Version 1.3.13 Released
----------------------
-Please see the [Changelog](https://github
+Please see the [changelog](https://github
 .com/AzimuthLabs/helpscout-api-java/blob/master/CHANGELOG.md) for details.
 
 Requirements
